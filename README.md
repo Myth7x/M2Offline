@@ -7,7 +7,12 @@
         [❌] Create character
     [❌] Game logic
         [❌] Loading screen
-        [❌] Local character gameplay
+        [❌] Character management
+            [❌] Character selection
+            [❌] Character creation
+            [❌] Character deletion
+        [❌] Character gameplay
+            [❌] Character stats
             [❌] Movement
             [❌] Skills
             [❌] Inventory & Items
