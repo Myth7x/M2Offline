@@ -27,8 +27,7 @@ from .session_manager   import SessionManager
 def CreateSchema(_engine):
     try:
         with _engine.connect() as _connection: # To automatically close connection
-            _session_manager = SessionManager(_engine)
-            with _session_manager as session: # To automatically commit or rollback
+            with SessionManager(_engine) as session:
                 ExtendedBase.metadata.create_all(_engine)
         _engine.dispose()
     except Exception as e:
