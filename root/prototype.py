@@ -2,35 +2,29 @@ import logging
 import sqlalchemy as sa
 
 logger = {
-	"Aethernum" : logging.getLogger('[Aethernum]'),
-	"Database" : logging.getLogger('[Database]')
+	"Aethernum" 	: logging.getLogger('[Aethernum]'),
+	"Database" 		: logging.getLogger('[Database]')
 }
 
 # 1. Init python module : Binary -> Python | Python -> Binary
 ########################################
 ## Setup database, set module ptr to db manager
-import database_manager as dbMgr
-import database as db_module
-dbMgr.InitializePython(db_module)
-########################################
-
 logger["Database"].info("Loading Database...")
 
-_engine = sa.create_engine("sqlite:///database.db", echo=False)
+import database_manager as dbMgr
+import database as db_module
 
+_engine = sa.create_engine(dbMgr.DB_NAME, echo=False)
+dbMgr.InitializePython(db_module, _engine)				# Binary -> Python + Create Schema
+
+
+########################################
 with _engine.connect() as _connection:
 	_session_manager = db_module.session_manager.SessionManager(_engine)
-
-	# Using the session manager
 	with _session_manager as session:
-		# Create a new account
-		session.add(db_module.schema.Accounts(name="Myth", hash="1234"))
-		session.commit()
-
-	# Using the logger to query the database and look at the account table
-	logger["Database"].info("Result: %s", db_module.QueryWithReturn(_connection, "SELECT * FROM Accounts"))
-
-####################
+		session.add(db_module.schema.Account(name="Myth", hash="1234"))
+	logger["Database"].info("Result: %s", db_module.QueryWithReturn(_connection, "SELECT * FROM Account"))
+########################################
 
 import app, wndmgr, systemsetting, dbg
 
