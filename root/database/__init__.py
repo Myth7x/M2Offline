@@ -14,23 +14,26 @@ import logging
 from typing import Any
 import sqlalchemy as sa
 
-from .schema            import Accounts, Characters
+import database_manager as dbMgr
+
+from .schema            import Account, Player
 from .extended_base     import ExtendedBase
 from .session_manager   import SessionManager
-from .                  import utils
 # - - - - - - - - - - - - - - - - - - - -
 """
     Create Schema function 
     (this gets called from binary after executing prototype.py->database_manager.InitializePython(..))
 """
-def CreateSchema(module):
+def CreateSchema(_engine):
     try:
-        engine = sa.create_engine("sqlite:///database.db", echo=False)
-        extended_base.Base.metadata.create_all(engine)
-        utils.Commit(engine)
-        logging.getLogger('[Database]').info("Schema created")
+        with _engine.connect() as _connection: # To automatically close connection
+            _session_manager = SessionManager(_engine)
+            with _session_manager as session: # To automatically commit or rollback
+                ExtendedBase.metadata.create_all(_engine)
+        _engine.dispose()
     except Exception as e:
-        logging.getLogger('[Database]').error("Error while creating schema: %s", e)
+        logging.exception("Failed to create database schema")
+        raise e
 
 """
     Query with return fetchall
