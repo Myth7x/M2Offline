@@ -9,7 +9,7 @@ public:
     CDatabaseManager();
     virtual ~CDatabaseManager();
 
-    void InitPython(PyObject* poSelf);
+    void InitPython(PyObject* poSelf, PyObject* poEngine);
 
     std::map<int, std::wstring> Execute(std::wstring& query);
 

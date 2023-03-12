@@ -16,7 +16,11 @@ PyObject* dbgMgrInitializePython(PyObject* poSelf, PyObject* poArgs)
 	if (!PyTuple_GetObject(poArgs, 0, &poModule))
 		return Py_BuildException();
 
-	CDatabaseManager::Instance().InitPython(poModule);
+	PyObject* poEngine;
+	if (!PyTuple_GetObject(poArgs, 1, &poEngine))
+		return Py_BuildException();
+
+	CDatabaseManager::Instance().InitPython(poModule, poEngine);
 
 	return Py_BuildNone();
 }
@@ -44,7 +48,7 @@ PyMODINIT_FUNC initdatabasemanager()
 
 	PyObject* poModule = PyModule_Create(&moduledef);
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-	
+	PyModule_AddStringConstant(poModule, ObfStr("DB_NAME"), "sqlite:///database.db");
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	return poModule;
 }
