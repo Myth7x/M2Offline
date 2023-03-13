@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "DatabaseManager.h"
 
-PyObject* dbgMgrExecute(PyObject* poSelf, PyObject* poArgs)
+PyObject* dbMgrExecute(PyObject* poSelf, PyObject* poArgs)
 {
 	std::wstring query;
 	if (!PyTuple_GetWString(poArgs, 0, query))
@@ -10,7 +10,7 @@ PyObject* dbgMgrExecute(PyObject* poSelf, PyObject* poArgs)
 	std::map<int, std::wstring> res = CDatabaseManager::Instance().Execute(query);
 }
 
-PyObject* dbgMgrInitializePython(PyObject* poSelf, PyObject* poArgs)
+PyObject* dbMgrInitializePython(PyObject* poSelf, PyObject* poArgs)
 {
 	PyObject* poModule;
 	if (!PyTuple_GetObject(poArgs, 0, &poModule))
@@ -20,18 +20,33 @@ PyObject* dbgMgrInitializePython(PyObject* poSelf, PyObject* poArgs)
 	if (!PyTuple_GetObject(poArgs, 1, &poEngine))
 		return Py_BuildException();
 
-	CDatabaseManager::Instance().InitPython(poModule, poEngine);
+	PyObject* poPhaseManager;
+	if (!PyTuple_GetObject(poArgs, 2, &poPhaseManager))
+		return Py_BuildException();
+
+	CDatabaseManager::Instance().InitPython(poModule, poEngine, poPhaseManager);
 
 	return Py_BuildNone();
 }
 
+PyObject* dbMgrGetEngine(PyObject* poSelf, PyObject* poArgs)
+{
+	return Py_BuildValue("O", CDatabaseManager::Instance().GetEngine());
+}
+
+PyObject* dbMgrGetPhaseManager(PyObject* poSelf, PyObject* poArgs)
+{
+	return Py_BuildValue("O", CDatabaseManager::Instance().GetPhaseManager());
+}
 
 PyMODINIT_FUNC initdatabasemanager()
 {
 	static PyMethodDef s_methods[] =
 	{
-		{ ObfStr("InitializePython"), dbgMgrInitializePython, METH_VARARGS },
-		{ ObfStr("Execute"), dbgMgrExecute, METH_VARARGS },
+		{ ObfStr("InitializePython"), dbMgrInitializePython, METH_VARARGS },
+		{ ObfStr("Execute"), dbMgrExecute, METH_VARARGS },
+		{ ObfStr("GetPhaseManager"), dbMgrGetPhaseManager, METH_VARARGS },
+		{ ObfStr("GetEngine"), dbMgrGetEngine, METH_VARARGS },
 
 		{ NULL, NULL, NULL },
 	};

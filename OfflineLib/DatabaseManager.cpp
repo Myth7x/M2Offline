@@ -34,8 +34,11 @@ std::map<int, std::wstring> CDatabaseManager::Execute(std::wstring& query)
     return ret;
 }
 
-void CDatabaseManager::InitPython(PyObject* poSelf, PyObject* poEngine)
+void CDatabaseManager::InitPython(PyObject* poSelf, PyObject* poEngine, PyObject* poPhaseManager)
 {
-    m_ppyDatabase = poSelf;
+    m_ppyDatabase       = poSelf;
+    m_ppyEngine         = poEngine;
+    m_ppyPhaseManager   = poPhaseManager;
+
     PyCallClassMemberFunc(poSelf, "CreateSchema", Py_BuildValue("(O)", poEngine));
 }
